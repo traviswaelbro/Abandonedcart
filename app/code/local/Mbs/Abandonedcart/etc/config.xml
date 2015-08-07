@@ -1,0 +1,92 @@
+<config>
+	<modules>
+		<Mbs_Abandonedcart>
+			<version>1.0</version>
+		</Mbs_Abandonedcart>
+	</modules>
+	<adminhtml>
+		<acl>
+			<resources>
+				<admin>
+					<children>
+						<system>
+							<children>
+								<config>
+									<children>
+										<mbs_options>
+											<title>Abandoned Cart Email Options</title>
+										</mbs_options>
+									</children>
+								</config>
+							</children>
+						</system>
+					</children>
+				</admin>
+			</resources>
+		</acl>
+	</adminhtml>
+	<global>
+		<models>
+			<mbs_abandonedcart>
+				<class>Mbs_Abandonedcart_Model</class>
+				<resourceModel>mbs_abandonedcart_resource</resourceModel>
+			</mbs_abandonedcart>
+		</models>
+ 
+		<resources>
+			<mbs_abandonedcart_setup>
+				<setup>
+					<module>Mbs_Abandonedcart</module>
+				</setup>
+			</mbs_abandonedcart_setup>
+		</resources>
+ 
+		<blocks>
+			<mbs_abandonedcart>
+				<class>Mbs_Abandonedcart_Block</class>
+			</mbs_abandonedcart>
+		</blocks>
+ 
+		<helpers>
+			<mbs_abandonedcart>
+				<class>Mbs_Abandonedcart_Helper</class>
+			</mbs_abandonedcart>
+		</helpers>
+	</global>
+ 
+	<admin>
+		<routers>
+			<adminhtml>
+				<args>
+					<modules>
+						<Mbs_Abandonedcart after="Mage_Adminhtml">Mbs_Abandonedcart</Mbs_Abandonedcart>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>
+	</admin>
+  <global>
+	<helpers>
+	  <mbs_abandonedcart>
+		<class>Mbs_Abandonedcart_Helper</class>
+	  </mbs_abandonedcart>
+	</helpers>
+	<models>
+		<mbs_abandonedcart>
+			<class>Mbs_Abandonedcart_Model</class>
+		</mbs_abandonedcart>
+	</models>
+  </global>
+  <crontab>
+	  <jobs>
+		  <abandonedcart_cron>
+			  <schedule>
+				  <cron_expr>*/5 * * * *</cron_expr>
+			  </schedule>
+			  <run>
+				  <model>mbs_abandonedcart/observer::sendReminderEmails</model>
+			  </run>
+		  </abandonedcart_cron>
+	  </jobs>
+  </crontab>
+</config>

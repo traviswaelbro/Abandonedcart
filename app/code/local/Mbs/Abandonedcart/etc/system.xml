@@ -1,0 +1,93 @@
+<config>
+	<tabs>
+		<mbs translate="label" module="mbs_abandonedcart">
+			<label>Mbs</label>
+			<sort_order>500</sort_order>
+		</mbs>
+	</tabs>
+	<sections>
+		<mbs_options translate="label" module="mbs_abandonedcart">
+			<label>Abandoned Cart Email Options</label>
+			<tab>mbs</tab>
+			<frontend_type>text</frontend_type>
+			<sort_order>1</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>1</show_in_website>
+			<show_in_store>1</show_in_store>
+			<groups>
+				<settings translate="label">
+					<label>General Settings</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>1</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+					<fields>
+						<minutes_to translate="label">
+							<label>Ignore carts abandoned less than this many minutes ago</label>
+							<frontend_type>text</frontend_type>
+              <comment><![CDATA[Do Get Carts Abandoned more than x minutes ago]]></comment>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</minutes_to>
+            <minutes_from translate="label">
+              <label>Ignore carts abandoned more than this many minutes ago</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>10</sort_order>
+              <comment><![CDATA[Do Get Carts Abandoned less than x minutes ago]]></comment>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </minutes_from>
+						<template_id translate="label">
+							<label>Send Transactional Email</label>
+							<frontend_type>text</frontend_type>
+              <comment><![CDATA[Transactional Email Template with ID]]></comment>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</template_id>
+						<time translate="label">
+							<label>Start Time</label>
+							<frontend_type>time</frontend_type>
+							<comment><![CDATA[
+								This field is used UNLESS Cron Frequency is "Every X Minutes"]]></comment>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</time>
+						<per_hour translate="label">
+							<label>Every X minutes</label>
+							<frontend_type>text</frontend_type>
+							<comment><![CDATA[This field is used if Cron Frequency is "Every X Minutes"<br>
+								Enter 15 for every 15 minutes]]></comment>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</per_hour>
+						<frequency translate="label">
+							<label>Cron Frequency</label>
+							<frontend_type>select</frontend_type>
+              <comment><![CDATA[
+                Every hour at the minute saved in "Start Time"<br />
+                Daily at the time saved in "Start Time"<br />
+                Every week on the first day of the week<br />
+                Every month on the first]]></comment>
+							<source_model>mbs_abandonedcart/adminhtml_system_config_source_cron_frequency</source_model>
+							<backend_model>mbs_abandonedcart/adminhtml_system_config_backend_abandonedcart_cron</backend_model>
+							<sort_order>50</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>0</show_in_website>
+							<show_in_store>0</show_in_store>
+						</frequency>
+					</fields>
+				</settings>
+			</groups>
+		</mbs_options>
+	</sections>
+</config>
