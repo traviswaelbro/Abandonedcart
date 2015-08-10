@@ -1,7 +1,7 @@
 <config>
 	<modules>
 		<Mbs_Abandonedcart>
-			<version>1.0</version>
+			<version>1.0.0</version>
 		</Mbs_Abandonedcart>
 	</modules>
 	<adminhtml>
@@ -27,18 +27,39 @@
 	</adminhtml>
 	<global>
 		<models>
-			<mbs_abandonedcart>
+			<abandonedcart>
 				<class>Mbs_Abandonedcart_Model</class>
-				<resourceModel>mbs_abandonedcart_resource</resourceModel>
-			</mbs_abandonedcart>
+				<resourceModel>abandonedcart_resource</resourceModel>
+			</abandonedcart>
+			<abandonedcart_resource>
+				<class>Mbs_Abandonedcart_Model_Resource</class>
+				<entities>
+					<abandonedcart>
+						<table>abandonedcart</table>
+					</abandonedcart>
+				</entities>
+			</abandonedcart_resource>
 		</models>
  
 		<resources>
-			<mbs_abandonedcart_setup>
+			<abandonedcart_setup>
 				<setup>
 					<module>Mbs_Abandonedcart</module>
 				</setup>
-			</mbs_abandonedcart_setup>
+				<connection>
+					<use>core_setup</use>
+				</connection>
+			</abandonedcart_setup>
+			<abandonedcart_read>
+				<connection>
+					<use>core_read</use>
+				</connection>
+			</abandonedcart_read>
+			<abandonedcart_write>
+				<connection>
+					<use>core_write</use>
+				</connection>
+			</abandonedcart_write>
 		</resources>
  
 		<blocks>
@@ -65,19 +86,7 @@
 			</adminhtml>
 		</routers>
 	</admin>
-  <global>
-	<helpers>
-	  <mbs_abandonedcart>
-		<class>Mbs_Abandonedcart_Helper</class>
-	  </mbs_abandonedcart>
-	</helpers>
-	<models>
-		<mbs_abandonedcart>
-			<class>Mbs_Abandonedcart_Model</class>
-		</mbs_abandonedcart>
-	</models>
-  </global>
-  <crontab>
+	<crontab>
 	  <jobs>
 		  <abandonedcart_cron>
 			  <schedule>
@@ -88,5 +97,5 @@
 			  </run>
 		  </abandonedcart_cron>
 	  </jobs>
-  </crontab>
+	</crontab>
 </config>

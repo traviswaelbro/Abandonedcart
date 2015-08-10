@@ -2,6 +2,10 @@
 
 class Mbs_Abandonedcart_AbandonedcartController extends Mage_Adminhtml_Controller_Action {
 
+	public function _isAllowed() {
+		return Mage::getSingleton('admin/session')->isAllowed('abandonedcart/email');
+	}
+
 	public function indexAction() {
 		$this->_title($this->__('Abandoned Cart Emails'));
 		$this->loadLayout();
