@@ -3,17 +3,16 @@
 class Mbs_Abandonedcart_Model_Observer {
 
     public function sendReminderEmails() {
-
         Mage::log("Mbs Abandoned Cart Observer Fired by cron!",null,"test.log");
 
         // Load Configuration Settings
-        $mailTemplate    = Mage::getSingleton('core/email_template');
-        $translate       = Mage::getSingleton('core/translate'); 
-        $emailTemplateId = Mage::getStoreConfig('mbs_options/settings/template_id');
+        $emailTemplate       = Mage::getModel('core/email_template');
+        $translate           = Mage::getSingleton('core/translate');
+        $templateId          = Mage::getStoreConfig('mbs_options/settings/template_id');
 
         // Get Email Template information
-        $templateCollection = $mailTemplate->load($emailTemplateId);
-        $templateData       = $templateCollection->getData();
+        $template_collection = $emailTemplate->load($templateId);
+        $template_data       = $template_collection->getData();
 
         $adapter = Mage::getSingleton('core/resource')->getConnection('sales_read');
 
@@ -30,57 +29,105 @@ class Mbs_Abandonedcart_Model_Observer {
             Varien_Db_Adapter_Interface::INTERVAL_MINUTE
         );
 
+        $createdAgo = Mage::getStoreConfig('mbs_options/settings/created_ago');
+        Mage::log("Created ago original value is ".$createdAgo,null,"test.log");
+        if($createdAgo) {
+            $createdAgo = $minutesFrom + $createdAgo;
+            Mage::log("Created ago updated value is ".$createdAgo,null,"test.log");
+            $createdAgo = $adapter->getDateSubSql(
+                $adapter->quote(now()),
+                $createdAgo,
+                Varien_Db_Adapter_Interface::INTERVAL_MINUTE);
+            Mage::log("Created ago updated value is ".$createdAgo,null,"test.log");
+        }
+
         Mage::log("We want carts abandoned more than ".$minutesTo." minutes old but less than ".$minutesFrom." minutes old.",null,"test.log");
 
         // If there exists a quote (cart) that has been made in the desired range, add it to the collection
-        $quotes = Mage::getResourceModel('sales/quote_collection')->addFieldToFilter('updated_at', array('from' => $from, 'to' => $to));
+        if($createdAgo) { // If created ago is not blank, then user wants all carts updated within the time frame that were created within a 2nd time frame
+            $quotes = Mage::getResourceModel('sales/quote_collection')
+                            ->addFieldToFilter('updated_at', array('from' => $from, 'to' => $to))
+                            ->addFieldToFilter('created_at', array('from' => $createdAgo));
+        } else { // If created ago is blank, then user wants all carts updated within the time frame
+            $quotes = Mage::getResourceModel('sales/quote_collection')
+                            ->addFieldToFilter('updated_at', array('from' => $from, 'to' => $to));
+        }
 
         foreach( $quotes as $quote ) {
+            Mage::log("Quote Created At: ".$quote->getData('created_at'),null,"test.log");
             Mage::log("Quote Last Update At: " . $quote->getData( 'updated_at' ),null,"test.log");
 
+
             // Get orders and check if there is an order number that corresponds to the quote (cart) number
+            // $orders = Mage::getModel('sales/order')->getCollection()
+            //                                        ->addFieldToFilter( 'quote_id', $quote->getId() );
             $orders = Mage::getModel('sales/order')->getCollection()
-                                                   ->addFieldToFilter( 'quote_id', $quote->getId() );
+                                                   ->addFieldToFilter('customer_id', $quote->getCustomerId() )
+                                                   ->addFieldToFilter('created_at', array('to' => $to));
 
             Mage::log("Is there an order matching the quote? ".$orders->count(),null,"test.log");
 
             // If there is no order made, then send the reminder email
-            if($orders->count() == 0 /*&& $quote->getCustomerEmail() == "twaelbroeck@gmail.com"*/) {
+            if($orders->count() == 0 /*&& $quote->getCustomerEmail() == "travis.w@mbs-standoffs.com"*/) {
                 $customerEmail  = $quote->getCustomerEmail();
-                $customerName = $quote->getName();
+                $customerFirstName = $quote->getData('customer_firstname');
+                $customerLastName = $quote->getData('customer_lastname');
 
-                Mage::log("Let's send an email to ".$customerName." at ".$email."!",null,"test.log");
-                Mage::log("Template ID: ".$emailTemplateId,null,"test.log");
+                Mage::log("Let's send an email (template #".$templateId.") to ".$customerFirstName." at ".$customerEmail."!",null,"test.log");
 
-                if(!empty($templateData)) {
-                    $templateId   = $templateData['template_id'];
+                if(!empty($template_data) /*&& $customerEmail == "travis.w@mbs-standoffs.com"*/)
+                {
                     $mailSubject  = $templateData['template_subject'];
+                    $storeId     = Mage::app()->getStore()->getStoreId();
 
                     // Fetch sender data from System > Configuration > Store Email Addresses > General Contact
-                    $senderEmail  = Mage::getStoreConfig('trans_email/ident_general/email'); // Fetch sender email
-                    $senderName   = Mage::getStoreConfig('trans_email/ident_general/name');  // Fetch sender name
-                    $sender       = array('name'  => $senderName, 'email' => $senderEmail);
+                    $from_email  = Mage::getStoreConfig('mbs_options/settings/sender_email'); // Fetch sender email
+                    $from_name   = Mage::getStoreConfig('mbs_options/settings/sender_name');  // Fetch sender name
+                    $sender      = array('name'=> $from_name,
+                                         'email' => $from_email);
 
-                    $vars         = null; //for replacing the variables in email with data: array('variable'=>'value' )
-                    $storeId      = Mage::app()->getStore()->getId();
+                    // For replacing the variables in email with data: array('variable'=>'value' )
+                    $vars        = array('customerFirstName' => $customerFirstName,
+                                         'customerLastName'  => $customerLastName
+                                         );
 
-                    $model        = $mailTemplate->setReplyTo($sender['email'])->setTemplateSubject($mailSubject);
-
-                    Mage::log("Sending Template with subject: ".$mailSubject." from ".$senderName." at ".$senderEmail." to ".$customerName." at ".$customerEmail,null,"test.log");
-                    $model->sendTransactional($templateId,
-                                            $sender, 
-                                            $customerEmail, 
-                                            $customerName, 
-                                            $vars, 
-                                            $storeId);
-
-                    if (!$mailTemplate->getSentSuccess()) {
+                    Mage::log("Template ".$templateId." from ".$sender['name']." ".$sender['email']." to ".$customerFirstName." ".$customerEmail." ".$storeId);
+                    $model = $emailTemplate->setReplyTo($sender['email'])->setTemplateSubject($mailSubject);
+                    // echo "template ".$templateId." subject ".$mailSubject." email ".$email." name ".$custoemrName." store id ".$storeId."<br>";
+                    // var_dump($sender);
+                    // var_dump($vars);
+                    Mage::log("Template ".$templateId." from ".$sender['name']." ".$sender['email']." to ".$customerFirstName." ".$customerEmail." ".$storeId,null,"test.log");
+                    try {
+                        $model->sendTransactional($templateId, $sender, $customerEmail, $customerFirstName, $vars, $storeId);
+                    if(!$emailTemplate->getSentSuccess()) {
+                        $status = "Success";
                         Mage::log("Something went wrong trying to send an email to ".$customerEmail."...",null,"test.log");
-                        throw new Exception();
+                    } else {
+                        $status = "Failed";
+                        Mage::log("Abandoned Cart Message Sent to ".$customerEmail."!",null,"test.log");
                     }
-                    Mage::log("Abandoned Cart Message Sent to ".$customerEmail."!",null,"test.log");
+                    
+
+                    // Log the email attempt, whether or not it succeeded
+                    $newRow = array(
+                            'name'    => $customerFirstName." ".$customerLastName,
+                            'email'   => $customerEmail,
+                            'status'  => $status,
+                            'sent_at' => Mage::getModel('core/date')->date('Y-m-d H:i:s')
+                        );
+                    $table = Mage::getModel('mbs_abandonedcart/abandonedcart')->setData($newRow);
+                    try {
+                        $insertId = $table->save()->getId();
+                        Mage::log("Message with id ".$insertId." logged.",null,"test.log");
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
+                    }
+
                     $translate->setTranslateInline(true);
-                } else {Mage::log("Template data empty!",null,"test.log");}
+                    } catch(Exception $e) {
+                       Mage::logException($e)  ;
+                    }
+                } else Mage::log("It seems template data is empty for template with id ".$template_id);
             }
         }
     }

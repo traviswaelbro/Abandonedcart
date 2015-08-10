@@ -9,6 +9,7 @@ CREATE TABLE {$this->getTable('abandonedcart')} (
 	`email_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 	`name` varchar(255) NOT NULL,
 	`email` varchar(255) NOT NULL,
+	`status` varchar(255) NOT NULL,
 	`sent_at` datetime NOT NULL,
 	PRIMARY KEY (`email_id`)
 	) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

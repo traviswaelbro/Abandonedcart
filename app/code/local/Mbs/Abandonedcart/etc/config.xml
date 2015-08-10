@@ -27,6 +27,10 @@
 	</adminhtml>
 	<global>
 		<models>
+			<mbs_abandonedcart>
+				<class>Mbs_Abandonedcart_Model</class>
+				<resourceModel>mbs_abandonedcart_resource</resourceModel>
+			</mbs_abandonedcart>
 			<abandonedcart>
 				<class>Mbs_Abandonedcart_Model</class>
 				<resourceModel>abandonedcart_resource</resourceModel>
@@ -42,6 +46,11 @@
 		</models>
  
 		<resources>
+			<mbs_abandonedcart_setup>
+				<setup>
+					<module>Mbs_Abandonedcart</module>
+				</setup>
+			</mbs_abandonedcart_setup>
 			<abandonedcart_setup>
 				<setup>
 					<module>Mbs_Abandonedcart</module>

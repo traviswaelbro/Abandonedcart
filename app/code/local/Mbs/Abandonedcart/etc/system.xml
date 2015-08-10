@@ -23,29 +23,54 @@
 					<show_in_website>1</show_in_website>
 					<show_in_store>1</show_in_store>
 					<fields>
-						<minutes_to translate="label">
-							<label>Ignore carts abandoned less than this many minutes ago</label>
+						<sender_name translate="label">
+							<label>Sender Name</label>
 							<frontend_type>text</frontend_type>
-              <comment><![CDATA[Do Get Carts Abandoned more than x minutes ago]]></comment>
 							<sort_order>1</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
+						</sender_name>
+						<sender_email translate="label">
+							<label>Sender Email</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>5</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</sender_email>
+						<minutes_to translate="label">
+							<label>Ignore carts abandoned less than this many minutes ago</label>
+							<frontend_type>text</frontend_type>
+              <comment><![CDATA[Do Get Carts Abandoned more than x minutes ago]]></comment>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
 						</minutes_to>
-            <minutes_from translate="label">
-              <label>Ignore carts abandoned more than this many minutes ago</label>
-              <frontend_type>text</frontend_type>
-              <sort_order>10</sort_order>
-              <comment><![CDATA[Do Get Carts Abandoned less than x minutes ago]]></comment>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>1</show_in_store>
-            </minutes_from>
+			            <minutes_from translate="label">
+			              <label>Ignore carts abandoned more than this many minutes ago</label>
+			              <frontend_type>text</frontend_type>
+			              <sort_order>15</sort_order>
+			              <comment><![CDATA[Do Get Carts Abandoned less than x minutes ago]]></comment>
+			              <show_in_default>1</show_in_default>
+			              <show_in_website>1</show_in_website>
+			              <show_in_store>1</show_in_store>
+			            </minutes_from>
+			            <created_ago>
+			            	<label>Only send if cart was created within X minutes ago</label>
+			            	<frontend_type>text</frontend_type>
+			            	<sort_order>20</sort_order>
+			            	<comment><![CDATA[Leave blank if you want all carts created within range, regardless of when the cart was created.]]></comment>
+			            	<show_in_default>1</show_in_default>
+			            	<show_in_website>1</show_in_website>
+			            	<show_in_store>1</show_in_store>
+			            </created_ago>
 						<template_id translate="label">
 							<label>Send Transactional Email</label>
 							<frontend_type>text</frontend_type>
               <comment><![CDATA[Transactional Email Template with ID]]></comment>
-							<sort_order>20</sort_order>
+							<sort_order>25</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
