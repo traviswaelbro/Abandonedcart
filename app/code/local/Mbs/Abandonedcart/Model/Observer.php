@@ -9,6 +9,7 @@ class Mbs_Abandonedcart_Model_Observer {
         $emailTemplate       = Mage::getModel('core/email_template');
         $translate           = Mage::getSingleton('core/translate');
         $templateId          = Mage::getStoreConfig('mbs_options/settings/template_id');
+        $recentlySentMinutes = Mage::getStoreConfig('mbs_options/settings/recently_sent');
 
         // Get Email Template information
         $template_collection = $emailTemplate->load($templateId);
@@ -69,13 +70,24 @@ class Mbs_Abandonedcart_Model_Observer {
 
             // If there is no order made, then send the reminder email
             if($orders->count() == 0 /*&& $quote->getCustomerEmail() == "travis.w@mbs-standoffs.com"*/) {
+                $recentlySent = strtotime(Mage::getModel('core/date')->date('Y-m-d H:i:s')."-".$recentlySentMinutes); // Time in seconds
                 $customerEmail  = $quote->getCustomerEmail();
                 $customerFirstName = $quote->getData('customer_firstname');
                 $customerLastName = $quote->getData('customer_lastname');
 
-                Mage::log("Let's send an email (template #".$templateId.") to ".$customerFirstName." at ".$customerEmail."!",null,"test.log");
+                $previousEmails = Mage::getModel('abandonedcart/abandonedcart')->getCollection()
+                                      ->addFieldToFilter('email', array('eq' => $customerEmail));
 
-                if(!empty($template_data) /*&& $customerEmail == "travis.w@mbs-standoffs.com"*/)
+                foreach ($previousEmails as $previousEmail) {
+                    Mage::log(strtotime($previousEmail['sent_at']).".....".$recentlySent,null,"test.log");
+                    if(strtotime($previousEmail['sent_at']) > $recentlySent) {
+                        $abort = true;
+                        Mage::log('Another email was sent to '.$customerEmail.' at '.$previousEmail['sent_at'],null,"test.log");
+                    }
+                }
+                if($abort == false) {Mage::log("Let's send an email (template #".$templateId.") to ".$customerFirstName." at ".$customerEmail."!",null,"test.log");}
+
+                if(!empty($template_data) && $abort == false /*&& $customerEmail == "travis.w@mbs-standoffs.com"*/)
                 {
                     $mailSubject  = $templateData['template_subject'];
                     $storeId     = Mage::app()->getStore()->getStoreId();
