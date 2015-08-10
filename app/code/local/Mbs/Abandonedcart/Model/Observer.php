@@ -100,10 +100,10 @@ class Mbs_Abandonedcart_Model_Observer {
                     try {
                         $model->sendTransactional($templateId, $sender, $customerEmail, $customerFirstName, $vars, $storeId);
                     if(!$emailTemplate->getSentSuccess()) {
-                        $status = "Success";
+                        $status = "Failed";
                         Mage::log("Something went wrong trying to send an email to ".$customerEmail."...",null,"test.log");
                     } else {
-                        $status = "Failed";
+                        $status = "Success";
                         Mage::log("Abandoned Cart Message Sent to ".$customerEmail."!",null,"test.log");
                     }
                     
@@ -115,7 +115,7 @@ class Mbs_Abandonedcart_Model_Observer {
                             'status'  => $status,
                             'sent_at' => Mage::getModel('core/date')->date('Y-m-d H:i:s')
                         );
-                    $table = Mage::getModel('mbs_abandonedcart/abandonedcart')->setData($newRow);
+                    $table = Mage::getModel('abandonedcart/abandonedcart')->setData($newRow);
                     try {
                         $insertId = $table->save()->getId();
                         Mage::log("Message with id ".$insertId." logged.",null,"test.log");
