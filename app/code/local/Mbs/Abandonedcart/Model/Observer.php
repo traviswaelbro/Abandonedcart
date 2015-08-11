@@ -69,7 +69,7 @@ class Mbs_Abandonedcart_Model_Observer {
             Mage::log("Is there an order matching the quote? ".$orders->count(),null,"test.log");
 
             // If there is no order made, then send the reminder email
-            if($orders->count() == 0 /*&& $quote->getCustomerEmail() == "travis.w@mbs-standoffs.com"*/) {
+            if($orders->count() == 0 && ($quote->getCustomerEmail() == "travis.w@mbs-standoffs.com" || $quote->getCustomerEmail == "twaelbroeck@gmail.com")) {
                 $recentlySent = strtotime(Mage::getModel('core/date')->date('Y-m-d H:i:s')."-".$recentlySentMinutes); // Time in seconds
                 $customerEmail  = $quote->getCustomerEmail();
                 $customerFirstName = $quote->getData('customer_firstname');
@@ -87,7 +87,7 @@ class Mbs_Abandonedcart_Model_Observer {
                 }
                 if($abort == false) {Mage::log("Let's send an email (template #".$templateId.") to ".$customerFirstName." at ".$customerEmail."!",null,"test.log");}
 
-                if(!empty($template_data) && $abort == false /*&& $customerEmail == "travis.w@mbs-standoffs.com"*/)
+                if(!empty($template_data) && $abort == false)
                 {
                     $mailSubject  = $templateData['template_subject'];
                     $storeId     = Mage::app()->getStore()->getStoreId();
