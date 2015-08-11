@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<layout version="0.1.0">
-	<abandonedcart_adminhtml_index_index>
-		<reference name="content">
-			<block name="helloworld_grid" type="abandonedcart/adminhtml_grid" template="abandonedcart/abandonedcart.phtml"></block>
-		</reference>
-	</abandonedcart_adminhtml_index_index>
-</layout>
